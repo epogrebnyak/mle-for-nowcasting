@@ -3,14 +3,37 @@
 Maximum likelihood estimation - replication of repaso.m and ofn2.m MATLAB files.
 For discussion and update. 
 
+This script relies on following CSV files:
+   gdp.txt
+   x_matlab.txt   
+   y_matlab.txt
+
+Model:
+   y(t) is GDP growth rate
+   y = x*b + e
+   
 Comment:
 1. For data import and manipulation can use pandas functions pandas.read_csv(). 
 Keeping existing fucntions now for transparency.
-2. Functions like get_gdp_values() can be entry point for data import by user. 
-3. WARNING: deviation of x and y between python and matlab a bit high (see below)
-4. inv(t(x) * x ) * t(x) * y - what's the algebra?
-5. may want to check output against some package specialised in MLE, eg 
 
+2. Functions like get_gdp_values() can be entry point for data import by user, can be hidden 
+to file separate from workfile. Generally, code below can be cleaned from tests and comments.
+
+3. WARNING: deviation of x and y between python and matlab a bit high (see below),   
+   same for MLE results, I'd be expecting more accuracy, do not know why the result 
+   is slightly difrerent from Matlab.
+
+4. inv(t(x) * x ) * t(x) * y - what's the algebra here? (see comment below)
+
+5. may want to check output against some package specialised in MLE, eg 
+https://github.com/ibab/python-mle or R's https://stat.ethz.ch/R-manual/R-devel/library/stats4/html/mle.html
+Reason:
+   - accuracy
+   - convergence of minimisation function
+   - speed comparison   
+   
+6. Next thing is probably would be programming Kalman filter and comparing it with other 
+   implementations in R and python. 
 """
 
 import csv
@@ -18,7 +41,7 @@ import numpy as np
  
 
 ##################################################################
-#  Basic CSV input-output functions
+#  CSV input-output functions
 ##################################################################
 
 csv_flavor = {'delimiter': ',' , 'lineterminator' : '\n'}
@@ -64,7 +87,7 @@ def get_gdp_values():
     return get_csv_column_as_column_vector(f)
 
 ##################################################################
-# Matrix manipulation  
+# Matrix manipulation and other math functions 
 ##################################################################
     
 def t(x):
@@ -75,13 +98,13 @@ def inv(x):
     '''Invert matrix'''
     return np.linalg.inv(x)
 
-##################################################################
-# Likelihood function
-##################################################################
-
 def dnorm(x, mu, sigma):
     """ Density function for normal distribution. """ 
     return np.exp ( -.5*(x-mu)**2/(sigma**2)) / (sigma * np.sqrt(2 * np.pi))
+	
+##################################################################
+# Likelihood function
+##################################################################
 
 # function [fun] = ofn2(b)
 def ofn2(b, x, y):
