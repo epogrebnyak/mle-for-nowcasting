@@ -5,9 +5,7 @@
 #
 # http://www.le.ac.uk/users/dsgp1/COURSES/MATHSTAT/13mlreg.pdf
 #
-# 16:08 09.09.2015
-#
-#
+
 
 # Шаги
 ########## 1. Загрузка и преобразование данных
