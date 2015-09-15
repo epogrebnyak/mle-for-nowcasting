@@ -44,37 +44,48 @@ import numpy as np
 #  CSV input-output functions
 ##################################################################
 
-csv_flavor = {'delimiter': ',' , 'lineterminator' : '\n'}
+csv_flavor_comma = {'delimiter': ',' , 'lineterminator' : '\n'}
 
 # Output to CSV file
 
-def dump_stream_to_csv(iterable, csv_filename):
+def dump_stream_to_csv(iterable, csv_filename, csv_flavor = csv_flavor_comma):
     """ Write *iterable* stream into file *csv_filename*. """    
     with open(csv_filename, 'w') as csvfile:
         spamwriter = csv.writer(csvfile,  **csv_flavor)
         for row in iterable:        
              spamwriter.writerow(row)
     
-def dump_list_to_csv(_list, csv_filename):
-    dump_stream_to_csv(iter(_list), csv_filename)
+def dump_list_to_csv(_list, csv_filename,  csv_flavor = csv_flavor_comma):
+    dump_stream_to_csv(iter(_list), csv_filename, csv_flavor)
 
 # Input from CSV file
 
-def yield_csv_rows(csv_filename):
+def yield_csv_rows(csv_filename, csv_flavor = csv_flavor_comma):
     """ Open *csv_filename* and return rows as iterable."""
     with open(csv_filename, 'r') as csvfile:
         spamreader = csv.reader(csvfile, **csv_flavor)
         for row in spamreader:
             yield row
+
+def get_csv_rows_as_list(csv_filename, csv_flavor = csv_flavor_comma):
+    return [x for x in yield_csv_rows(csv_filename, csv_flavor)]
+
+def get_csv_rows_as_array(csv_filename, csv_flavor = csv_flavor_comma):
+    return np.array(get_csv_rows_as_list(csv_filename, csv_flavor))
+
+def get_csv_rows_as_matrix(csv_filename, csv_flavor = csv_flavor_comma):
+    return np.matrix(np.array(get_csv_rows_as_list(csv_filename, csv_flavor))
+                     , dtype = 'float64')    
+    
             
 def get_csv_column_as_list(csv_filename, column = 0):
     return [float(x[column]) for x in yield_csv_rows(csv_filename)]
 
-def get_csv_column_as_np_array(csv_filename, column = 0):
+def get_csv_column_as_array(csv_filename, column = 0):
     return np.array(get_csv_column_as_list(csv_filename, column))
 
 def get_csv_column_as_column_vector(csv_filename, column = 0):
-    return t(np.matrix(get_csv_column_as_np_array(csv_filename, column)))
+    return t(np.matrix(get_csv_column_as_array(csv_filename, column)))
         
 ##################################################################
 # Data import 
@@ -100,7 +111,13 @@ def inv(x):
 
 def dnorm(x, mu, sigma):
     """ Density function for normal distribution. """ 
-    return np.exp ( -.5*(x-mu)**2/(sigma**2)) / (sigma * np.sqrt(2 * np.pi))
+    # Same as:
+    #     return np.exp ( -.5*(x-mu)**2/(sigma**2)) / (sigma * np.sqrt(2 * np.pi))
+    # Similar to:
+    #     scipy.norm.pdf(x) = exp(-x**2/2)/sqrt(2*pi)
+    x = (x - mu) / sigma
+    M_1_SQRT_2PI = 1 / np.sqrt(2 * np.pi)
+    return M_1_SQRT_2PI * np.exp(-0.5 * x * x) / sigma
 	
 ##################################################################
 # Likelihood function
