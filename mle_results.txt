@@ -1,0 +1,36 @@
+17:05 17.09.2015
+
+Output
+======
+
+>python mle.py
+[ 0.48429218  0.36406009  0.85308808]
+
+>D:\rfolder\R-3.0.2\bin\i386\rscript.exe mle.r
+[1] 0.4843261 0.3639818 0.8531358
+
+
+
+MLE estimation results
+======================
+
+          beta[0]     beta[1]     sigma
+python:   0.48429218  0.36406009  0.85308808
+     R:   0.4843261   0.3639818   0.8531358
+
+
+Comments
+========
+
+1. Results slightly vary by run - same results on one day both in python and R
+but slightly different on another day, a bit 'weather-dependent'.
+
+# > opt$par
+#
+# [1] 0.4842910 0.3640093 0.7278337
+# [1] 0.4843261 0.3639818 0.8531358
+
+2. As opposed to comments on the internet, on my machine R code runs faster 
+than python (maybe in takes too long for libraries to load in python). 
+
+3. Sigma is sightly different than in Matlab code. 
